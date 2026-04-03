@@ -11,6 +11,7 @@ public class User
     public string? PhoneNumber { get; set; }
 
     public UserRole Role { get; set; } = UserRole.Customer;
+    public UserStatus Status { get; set; } = UserStatus.Pending;
     public KycStatus KycStatus { get; set; } = KycStatus.None;
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
