@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "r56BsNFOdAk=",
+  "dgSpecHash": "c2uk2cNb878=",
   "success": true,
   "projectFilePath": "/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Application/YashGems.Identity.Application.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "/Users/maaitlunghau/.nuget/packages/bcrypt.net-next/4.1.0/bcrypt.net-next.4.1.0.nupkg.sha512"
+  ],
   "logs": []
 }
