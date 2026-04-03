@@ -11,7 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="DTOs/" />
+    <Folder Include="DTOs/Messaging/" />
     <Folder Include="Interfaces/" />
+    <Folder Include="Messaging/" />
   </ItemGroup>
 
 </Project>
