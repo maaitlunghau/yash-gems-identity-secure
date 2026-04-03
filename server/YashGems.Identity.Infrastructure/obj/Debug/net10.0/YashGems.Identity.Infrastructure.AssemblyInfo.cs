@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("YashGems.Identity.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+77823d09c34df0005d05cba4bf429430fbe2343e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1a38ca70ac10d3479977378c7c8a60e5d2c8ff4e")]
 [assembly: System.Reflection.AssemblyProductAttribute("YashGems.Identity.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("YashGems.Identity.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

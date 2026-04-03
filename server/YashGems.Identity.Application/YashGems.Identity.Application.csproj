@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="../YashGems.Identity.Domain/YashGems.Identity.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

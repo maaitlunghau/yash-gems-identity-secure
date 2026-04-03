@@ -36,6 +36,43 @@
             "related": ".pdb;.xml"
           }
         }
+      },
+      "YashGems.Identity.Application/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "YashGems.Identity.Domain": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/YashGems.Identity.Application.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/YashGems.Identity.Application.dll": {}
+        }
+      },
+      "YashGems.Identity.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/YashGems.Identity.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/YashGems.Identity.Domain.dll": {}
+        }
+      },
+      "YashGems.Identity.Infrastructure/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "YashGems.Identity.Application": "1.0.0",
+          "YashGems.Identity.Domain": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/YashGems.Identity.Infrastructure.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/YashGems.Identity.Infrastructure.dll": {}
+        }
       }
     }
   },
@@ -75,11 +112,28 @@
         "microsoft.openapi.2.0.0.nupkg.sha512",
         "microsoft.openapi.nuspec"
       ]
+    },
+    "YashGems.Identity.Application/1.0.0": {
+      "type": "project",
+      "path": "../YashGems.Identity.Application/YashGems.Identity.Application.csproj",
+      "msbuildProject": "../YashGems.Identity.Application/YashGems.Identity.Application.csproj"
+    },
+    "YashGems.Identity.Domain/1.0.0": {
+      "type": "project",
+      "path": "../YashGems.Identity.Domain/YashGems.Identity.Domain.csproj",
+      "msbuildProject": "../YashGems.Identity.Domain/YashGems.Identity.Domain.csproj"
+    },
+    "YashGems.Identity.Infrastructure/1.0.0": {
+      "type": "project",
+      "path": "../YashGems.Identity.Infrastructure/YashGems.Identity.Infrastructure.csproj",
+      "msbuildProject": "../YashGems.Identity.Infrastructure/YashGems.Identity.Infrastructure.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net10.0": [
-      "Microsoft.AspNetCore.OpenApi >= 10.0.1"
+      "Microsoft.AspNetCore.OpenApi >= 10.0.1",
+      "YashGems.Identity.Application >= 1.0.0",
+      "YashGems.Identity.Infrastructure >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -106,7 +160,14 @@
       "frameworks": {
         "net10.0": {
           "targetAlias": "net10.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Application/YashGems.Identity.Application.csproj": {
+              "projectPath": "/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Application/YashGems.Identity.Application.csproj"
+            },
+            "/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Infrastructure/YashGems.Identity.Infrastructure.csproj": {
+              "projectPath": "/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Infrastructure/YashGems.Identity.Infrastructure.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
