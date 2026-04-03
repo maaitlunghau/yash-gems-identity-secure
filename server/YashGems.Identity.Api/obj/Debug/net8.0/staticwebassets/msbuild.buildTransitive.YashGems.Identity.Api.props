@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../buildMultiTargeting/YashGems.Identity.Api.props" />
+</Project>
