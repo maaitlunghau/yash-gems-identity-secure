@@ -1,0 +1,12 @@
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Domain/bin/Debug/net8.0/YashGems.Identity.Domain.deps.json
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Domain/bin/Debug/net8.0/YashGems.Identity.Domain.dll
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Domain/bin/Debug/net8.0/YashGems.Identity.Domain.pdb
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Domain/obj/Debug/net8.0/YashGems.Identity.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Domain/obj/Debug/net8.0/YashGems.Identity.Domain.AssemblyInfoInputs.cache
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Domain/obj/Debug/net8.0/YashGems.Identity.Domain.AssemblyInfo.cs
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Domain/obj/Debug/net8.0/YashGems.Identity.Domain.csproj.CoreCompileInputs.cache
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Domain/obj/Debug/net8.0/YashGems.Identity.Domain.sourcelink.json
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Domain/obj/Debug/net8.0/YashGems.Identity.Domain.dll
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Domain/obj/Debug/net8.0/refint/YashGems.Identity.Domain.dll
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Domain/obj/Debug/net8.0/YashGems.Identity.Domain.pdb
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Domain/obj/Debug/net8.0/ref/YashGems.Identity.Domain.dll
