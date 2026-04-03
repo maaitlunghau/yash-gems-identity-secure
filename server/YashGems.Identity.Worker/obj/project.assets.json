@@ -2,6 +2,19 @@
   "version": 3,
   "targets": {
     "net8.0": {
+      "BCrypt.Net-Next/4.1.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.1/BCrypt.Net-Next.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.1/BCrypt.Net-Next.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/8.0.0": {
         "type": "package",
         "dependencies": {
@@ -652,10 +665,63 @@
         "build": {
           "buildTransitive/net6.0/_._": {}
         }
+      },
+      "YashGems.Identity.Application/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "BCrypt.Net-Next": "4.1.0",
+          "YashGems.Identity.Domain": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/YashGems.Identity.Application.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/YashGems.Identity.Application.dll": {}
+        }
+      },
+      "YashGems.Identity.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/YashGems.Identity.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/YashGems.Identity.Domain.dll": {}
+        }
       }
     }
   },
   "libraries": {
+    "BCrypt.Net-Next/4.1.0": {
+      "sha512": "5YT3DKllmtkyW68PjURu/V1TOe4MKiByKwsRNVcfYE1S5KuFTeozdmKzyNzolKiQF391OXCaQtINvYT3j1ERzQ==",
+      "type": "package",
+      "path": "bcrypt.net-next/4.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "bcrypt.net-next.4.1.0.nupkg.sha512",
+        "bcrypt.net-next.nuspec",
+        "ico.png",
+        "lib/net10.0/BCrypt.Net-Next.dll",
+        "lib/net10.0/BCrypt.Net-Next.xml",
+        "lib/net20/BCrypt.Net-Next.dll",
+        "lib/net20/BCrypt.Net-Next.xml",
+        "lib/net35/BCrypt.Net-Next.dll",
+        "lib/net35/BCrypt.Net-Next.xml",
+        "lib/net462/BCrypt.Net-Next.dll",
+        "lib/net462/BCrypt.Net-Next.xml",
+        "lib/net472/BCrypt.Net-Next.dll",
+        "lib/net472/BCrypt.Net-Next.xml",
+        "lib/net48/BCrypt.Net-Next.dll",
+        "lib/net48/BCrypt.Net-Next.xml",
+        "lib/netstandard2.0/BCrypt.Net-Next.dll",
+        "lib/netstandard2.0/BCrypt.Net-Next.xml",
+        "lib/netstandard2.1/BCrypt.Net-Next.dll",
+        "lib/netstandard2.1/BCrypt.Net-Next.xml",
+        "readme.md"
+      ]
+    },
     "Microsoft.Extensions.Configuration/8.0.0": {
       "sha512": "0J/9YNXTMWSZP2p2+nvl8p71zpSwokZXZuJW+VjdErkegAnFdO1XlqtA62SJtgVYHdKu3uPxJHcMR/r35HwFBA==",
       "type": "package",
@@ -1659,12 +1725,23 @@
         "system.threading.ratelimiting.nuspec",
         "useSharedDesignerContext.txt"
       ]
+    },
+    "YashGems.Identity.Application/1.0.0": {
+      "type": "project",
+      "path": "../YashGems.Identity.Application/YashGems.Identity.Application.csproj",
+      "msbuildProject": "../YashGems.Identity.Application/YashGems.Identity.Application.csproj"
+    },
+    "YashGems.Identity.Domain/1.0.0": {
+      "type": "project",
+      "path": "../YashGems.Identity.Domain/YashGems.Identity.Domain.csproj",
+      "msbuildProject": "../YashGems.Identity.Domain/YashGems.Identity.Domain.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0": [
       "Microsoft.Extensions.Hosting >= 8.0.1",
-      "RabbitMQ.Client >= 7.2.1"
+      "RabbitMQ.Client >= 7.2.1",
+      "YashGems.Identity.Application >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -1691,7 +1768,11 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Application/YashGems.Identity.Application.csproj": {
+              "projectPath": "/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Application/YashGems.Identity.Application.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
