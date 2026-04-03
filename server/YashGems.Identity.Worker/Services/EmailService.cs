@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization.Metadata;
 using MailKit.Net.Smtp;
 using MimeKit;
 
@@ -21,7 +20,7 @@ public class EmailService : IEmailService
             ?? throw new ArgumentNullException();
         var senderEmail = emailSettings["SenderEmail"]
             ?? throw new ArgumentNullException();
-        var smtpServer = emailSettings["SmtpServer"]
+        var host = emailSettings["Host"]
             ?? throw new ArgumentNullException();
         var port = int.Parse(emailSettings["Port"]
             ?? throw new ArgumentNullException());
@@ -54,7 +53,7 @@ public class EmailService : IEmailService
         try
         {
             await client.ConnectAsync(
-                smtpServer,
+                host,
                 port,
                 MailKit.Security.SecureSocketOptions.StartTls
             );
@@ -62,6 +61,8 @@ public class EmailService : IEmailService
             await client.AuthenticateAsync(senderEmail, appPassword);
             await client.SendAsync(message);
             await client.DisconnectAsync(true);
+
+            Console.WriteLine("--> EMAIL GỬI VÀO MAILTRAP THÀNH CÔNG!");
         }
         catch (Exception ex)
         {

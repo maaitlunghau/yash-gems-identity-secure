@@ -55,3 +55,8 @@
 /Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Worker/obj/Debug/net8.0/YashGems.Identity.Worker.pdb
 /Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Worker/obj/Debug/net8.0/YashGems.Identity.Worker.genruntimeconfig.cache
 /Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Worker/obj/Debug/net8.0/ref/YashGems.Identity.Worker.dll
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Worker/bin/Debug/net8.0/BouncyCastle.Cryptography.dll
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Worker/bin/Debug/net8.0/MailKit.dll
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Worker/bin/Debug/net8.0/MimeKit.dll
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Worker/bin/Debug/net8.0/System.Security.Cryptography.Pkcs.dll
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Worker/bin/Debug/net8.0/runtimes/win/lib/net8.0/System.Security.Cryptography.Pkcs.dll
