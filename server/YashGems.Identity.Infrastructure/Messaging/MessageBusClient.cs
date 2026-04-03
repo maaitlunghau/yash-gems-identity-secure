@@ -9,8 +9,8 @@ namespace YashGems.Identity.Infrastructure.Messaging;
 public class MessageBusClient : IMessageBusClient
 {
     private readonly IConfiguration _configuration;
-    private readonly IConnection _connection;
-    private readonly IChannel _channel;
+    private readonly IConnection? _connection;
+    private readonly IChannel? _channel;
     private readonly string _exchangeName;
 
     public MessageBusClient(IConfiguration configuration)
