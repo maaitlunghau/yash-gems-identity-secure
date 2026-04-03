@@ -3,6 +3,7 @@ using System.Text.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using YashGems.Identity.Application.DTOs.Messaging;
+using YashGems.Identity.Worker.Services;
 
 namespace YashGems.Identity.Worker;
 
@@ -12,16 +13,20 @@ public class MessageSubscriber : BackgroundService
     private readonly IConfiguration _configuration;
     private IConnection? _connection;
     private IChannel? _channel;
+    private readonly IEmailService _emailService;
     private readonly string _exchangeName = "YashGemsExchange";
     private readonly string _queueName = "IdentityOtpQueue";
 
     public MessageSubscriber(
         ILogger<MessageSubscriber> logger,
-        IConfiguration configuration
+        IConfiguration configuration,
+        IEmailService emailService
     )
     {
         _logger = logger;
         _configuration = configuration;
+        _emailService = emailService;
+
         InitializeRabbitMQ();
     }
 
@@ -80,6 +85,9 @@ public class MessageSubscriber : BackgroundService
                     string.IsNullOrEmpty(otpMsg.Email) ? otpMsg.PhoneNumber : otpMsg.Email
                 );
                 _logger.LogInformation("--> [NỘI DUNG]: MÃ OTP CỦA BẠN LÀ: {Code}", otpMsg.OtpCode);
+
+                await _emailService.SendOtpEmailAsync(otpMsg.Email, otpMsg.OtpCode);
+                _logger.LogInformation("--> Đã gửi Email thật thành công đến: {Email}", otpMsg.Email);
             }
 
             // Gửi xác nhận cho RabbitMQ là "Tôi đã nhận hàng thành công, hãy xóa tin nhắn này đi"
