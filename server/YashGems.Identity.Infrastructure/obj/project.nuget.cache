@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "/0aenIMg7to=",
-  "success": true,
+  "dgSpecHash": "j9h5waXau90=",
+  "success": false,
   "projectFilePath": "/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Infrastructure/YashGems.Identity.Infrastructure.csproj",
   "expectedPackageFiles": [
+    "/Users/maaitlunghau/.nuget/packages/bcrypt.net-next/4.1.0/bcrypt.net-next.4.1.0.nupkg.sha512",
     "/Users/maaitlunghau/.nuget/packages/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg.sha512",
     "/Users/maaitlunghau/.nuget/packages/microsoft.aspnetcore.authentication.jwtbearer/10.0.5/microsoft.aspnetcore.authentication.jwtbearer.10.0.5.nupkg.sha512",
     "/Users/maaitlunghau/.nuget/packages/microsoft.build.framework/18.0.2/microsoft.build.framework.18.0.2.nupkg.sha512",
@@ -13,9 +14,9 @@
     "/Users/maaitlunghau/.nuget/packages/microsoft.codeanalysis.csharp.workspaces/5.0.0/microsoft.codeanalysis.csharp.workspaces.5.0.0.nupkg.sha512",
     "/Users/maaitlunghau/.nuget/packages/microsoft.codeanalysis.workspaces.common/5.0.0/microsoft.codeanalysis.workspaces.common.5.0.0.nupkg.sha512",
     "/Users/maaitlunghau/.nuget/packages/microsoft.codeanalysis.workspaces.msbuild/5.0.0/microsoft.codeanalysis.workspaces.msbuild.5.0.0.nupkg.sha512",
-    "/Users/maaitlunghau/.nuget/packages/microsoft.entityframeworkcore/10.0.5/microsoft.entityframeworkcore.10.0.5.nupkg.sha512",
-    "/Users/maaitlunghau/.nuget/packages/microsoft.entityframeworkcore.abstractions/10.0.5/microsoft.entityframeworkcore.abstractions.10.0.5.nupkg.sha512",
-    "/Users/maaitlunghau/.nuget/packages/microsoft.entityframeworkcore.analyzers/10.0.5/microsoft.entityframeworkcore.analyzers.10.0.5.nupkg.sha512",
+    "/Users/maaitlunghau/.nuget/packages/microsoft.entityframeworkcore/10.0.0/microsoft.entityframeworkcore.10.0.0.nupkg.sha512",
+    "/Users/maaitlunghau/.nuget/packages/microsoft.entityframeworkcore.abstractions/10.0.0/microsoft.entityframeworkcore.abstractions.10.0.0.nupkg.sha512",
+    "/Users/maaitlunghau/.nuget/packages/microsoft.entityframeworkcore.analyzers/10.0.0/microsoft.entityframeworkcore.analyzers.10.0.0.nupkg.sha512",
     "/Users/maaitlunghau/.nuget/packages/microsoft.entityframeworkcore.design/10.0.5/microsoft.entityframeworkcore.design.10.0.5.nupkg.sha512",
     "/Users/maaitlunghau/.nuget/packages/microsoft.entityframeworkcore.relational/10.0.5/microsoft.entityframeworkcore.relational.10.0.5.nupkg.sha512",
     "/Users/maaitlunghau/.nuget/packages/microsoft.extensions.caching.abstractions/10.0.5/microsoft.extensions.caching.abstractions.10.0.5.nupkg.sha512",
@@ -59,6 +60,17 @@
       "warningLevel": 1,
       "filePath": "/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Infrastructure/YashGems.Identity.Infrastructure.csproj",
       "libraryId": "Microsoft.EntityFrameworkCore.Relational",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
+      "code": "NU1605",
+      "level": "Error",
+      "message": "Warning As Error: Detected package downgrade: Microsoft.EntityFrameworkCore from 10.0.5 to 10.0.0. Reference the package directly from the project to select a different version. \n YashGems.Identity.Infrastructure -> Microsoft.EntityFrameworkCore.Design 10.0.5 -> Microsoft.EntityFrameworkCore.Relational 10.0.5 -> Microsoft.EntityFrameworkCore (>= 10.0.5) \n YashGems.Identity.Infrastructure -> Microsoft.EntityFrameworkCore (>= 10.0.0)",
+      "projectPath": "/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Infrastructure/YashGems.Identity.Infrastructure.csproj",
+      "filePath": "/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Infrastructure/YashGems.Identity.Infrastructure.csproj",
+      "libraryId": "Microsoft.EntityFrameworkCore",
       "targetGraphs": [
         "net10.0"
       ]
