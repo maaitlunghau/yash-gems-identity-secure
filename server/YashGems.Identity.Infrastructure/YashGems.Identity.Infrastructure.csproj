@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Authentication/" />
     <Folder Include="Data/" />
     <Folder Include="Data/Configurations/" />
     <Folder Include="Messaging/" />
