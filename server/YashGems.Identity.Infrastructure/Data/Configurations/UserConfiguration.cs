@@ -30,5 +30,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(u => u.KycStatus)
             .HasConversion<string>();
+
+        builder.Property(u => u.Status)
+            .HasConversion<string>()
+            .HasMaxLength(20);
     }
 }
