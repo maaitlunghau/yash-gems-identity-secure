@@ -3,6 +3,7 @@ using YashGems.Identity.Application.DTOs.Messaging;
 using YashGems.Identity.Application.Interfaces;
 using YashGems.Identity.Application.Messaging;
 using YashGems.Identity.Domain.Entities;
+using YashGems.Identity.Domain.Enums;
 
 namespace YashGems.Identity.Application.Services;
 
@@ -79,6 +80,9 @@ public class AuthService : IAuthService
         {
             otpRecord.IsUsed = true;
             await _otpRepository.UpdateAsync(otpRecord);
+
+            user.Status = UserStatus.Verified;
+            await _userRepository.UpdateAsync(user);
 
             return true;
         }
