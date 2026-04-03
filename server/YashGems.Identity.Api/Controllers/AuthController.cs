@@ -55,5 +55,14 @@ namespace YashGems.Identity.Api.Controllers
 
             return Ok("Đăng xuất thành công.");
         }
+
+        [HttpPost("verify-email")]
+        public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailRequest request)
+        {
+            var result = await _authService.VerifyEmailAsync(request.Email, request.Code);
+            if (!result) return BadRequest("Mã OTP không chính xác hoặc đã hết hạn.");
+
+            return Ok("Xác thực Email thành công!");
+        }
     }
 }
