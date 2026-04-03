@@ -1,6 +1,6 @@
 # 💎 Yash Gems Identity Provider - Auth & eKYC Platform
 
-<div align="center">
+<div align="left">
 
 ![.NET](https://img.shields.io/badge/.NET-8-512BD4?style=flat-square&logo=dotnet&logoColor=white)
 ![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=nextdotjs&logoColor=white)
