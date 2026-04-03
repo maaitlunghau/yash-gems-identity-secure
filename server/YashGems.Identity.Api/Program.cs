@@ -24,6 +24,7 @@ builder.Services.AddDbContext<IdentityDbContext>(options =>
 // 2. Đăng ký các Repository
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+builder.Services.AddScoped<IOtpRepository, OtpRepository>();
 
 // 3. Đăng ký các Infrastructure Service
 builder.Services.AddSingleton<IMessageBusClient, MessageBusClient>(); // giữ 1 kết nối duy nhất
