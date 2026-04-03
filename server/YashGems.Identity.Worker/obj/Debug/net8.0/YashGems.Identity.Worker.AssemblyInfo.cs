@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("YashGems.Identity.Worker")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f8f8bbe48ef4123784dd5acfc28b5e4e70e51ab7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fd583ca3eeab73e568fc24aacfff0ae220ed3f77")]
 [assembly: System.Reflection.AssemblyProductAttribute("YashGems.Identity.Worker")]
 [assembly: System.Reflection.AssemblyTitleAttribute("YashGems.Identity.Worker")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
