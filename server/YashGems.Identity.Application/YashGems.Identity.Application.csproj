@@ -11,10 +11,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs/" />
     <Folder Include="DTOs/Messaging/" />
     <Folder Include="Interfaces/" />
     <Folder Include="Messaging/" />
+    <Folder Include="Services/" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
   </ItemGroup>
 
 </Project>
