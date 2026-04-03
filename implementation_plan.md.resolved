@@ -1,0 +1,95 @@
+# Kế hoạch Triển khai Module Authentication & eKYC (Clean Architecture & RabbitMQ)
+
+## 1. Đánh giá mã nguồn Authentication đã có của bạn
+Mã nguồn bạn cung cấp cho JWT + Refresh Token Auth bằng Repository Pattern là một **nền tảng rất xuất sắc**. 
+
+### Điểm mạnh:
+- Quản lý vòng đời Refresh Token bằng thiết kế bảng CSDL riêng, bao gồm các trường ngày hết hạn, ngày thu hồi và đặc biệt là `ReplacedByRefreshToken` (Cơ chế xoay vòng - Rotation token, rất an toàn để chống tấn công đánh cắp token).
+- Custom middleware validation (`OnTokenValidated`) bắt cực tốt trạng thái bị revoked của token.
+- Mã code trong Token Service đã áp dụng đầy đủ tính năng claim và chuẩn mã hóa `SigningCredentials`.
+- Có xử lý giới hạn số lượng thiết bị (`activeTokenCount >= maxDevices`).
+
+### Cần cải thiện để "chuẩn" Clean Architecture & Tối ưu hơn:
+1. **Dependency Inversion (Đảo ngược phụ thuộc)**: Trong file `Program.cs`, sự kiện `OnTokenValidated` gọi trực tiếp `DataContext` (Tầng Data). Theo Clean Arch, Middleware nên gọi tới một Interface (ví dụ `IAuthService` ở tầng Application) thay vì trỏ thẳng vào DB.
+2. **Tách biệt Logic Nghiệp vụ (Service Layer)**: Chuyển toàn bộ logic từ Controller (mã hóa mật khẩu, kiểm tra thiết bị, tạo token) xuống các Service trong tầng Application. Controller chỉ đóng vai trò nhận request và trả về response.
+3. **Bảo mật kênh truyền (Refresh Token)**: Bạn đang trả `RefreshToken` về qua JSON body. Best Practice cho Frontend (NextJS) là gán nó vào **HttpOnly Cookie** để chống tấn công XSS.
+4. **Global Exception Handling**: Thay vì dùng `try-catch` lặp lại, hãy sử dụng Custom Middleware để xử lý lỗi tập trung.
+
+---
+
+## 2. Danh sách các tính năng chi tiết cần làm cho dự án Yash Gems
+
+Dựa vào yêu cầu nghiệp vụ chuyên sâu tại `README.md` và `DETAIL_MODULE.MD`, hệ thống cho dự án này rất phức tạp. Dưới đây là Check-list đầy đủ mọi chức năng định danh & phân quyền bạn phải làm:
+
+### 2.1 Quản lý Định danh & Phiên đăng nhập (Core Auth)
+- **Đăng ký Tài khoản (Register)**: Xác thực các format Email/SĐT chuẩn; Mã hoá mật khẩu bằng cơ chế mạnh.
+- **Kích hoạt tài khoản bằng OTP (Email/SMS)**: Tích hợp RabbitMQ để gửi mã số bất đồng bộ (giảm độ trễ cho API).
+- **Đăng nhập (Login)**: Hỗ trợ Standard (Email/Pass) và bổ sung Social Login (Ví dụ Google OAuth2 - tuỳ chọn).
+- **Cấp và Quản lý Token**: Cấp Access Token (quản lý phân quyền) và tạo Refresh Token bảo mật. Giới hạn đồng thời các thiết bị.
+- **Quản lý mật khẩu (Forgot/Reset Password)**: Flow xác thực mã OTP vào Email để reset lấy lại mật khẩu.
+- **Đăng xuất (Logout)**: Hủy mềm (Revoke) Refresh Token trong Database và xóa HttpOnly Cookie bên client.
+
+### 2.2 Luồng eKYC (Định danh điện tử - Cho giao dịch lớn)
+*Đây là điểm nhấn rất mạnh của dự án khi nói tới kim cương, yêu cầu khách chi trên ngưỡng tiền nào đó phải hoàn tất.*
+- **Lưu trữ CCCD/Passport**: Tính năng upload 2 mặt giấy tờ lên máy chủ Storage (như Cloudinary).
+- **Face Liveness Detection (Chống giả mạo tĩnh)**: Kết nối dữ liệu web cam gửi về backend để kiểm định chuyển động.
+- **Face Matching (So khớp mặt)**: Logic AI tính toán mức độ giống nhau (Distance point) của khuôn mặt người thực và ảnh trên CCCD.
+- **Quản lý trạng thái xác thực (`KYCStatus`)**: Chu trình kiểm duyệt `PENDING -> VERIFIED -> REJECTED -> MANUAL_REVIEW`. Gắn chặt validation này vào Flow mua hàng cao cấp.
+
+### 2.3 Phân Quyền Vai Trò Hệ thống (RBAC đa cấp đại lý)
+- Khác với Role "user/admin" dùng string đơn giản, hệ thống này cần cây Role phân cấp phức tạp: `Customer`, `Vendor_L1`, `Vendor_L2`, `Vendor_L3`, `Admin`, `Super_Admin`.
+- **Đóng gói Policy/Guard trên API (.NET Authorize)**: Phải custom lại cấu hình Middleware, chế tạo được Attribute đặc thù như `[RequireKycVerified]` hoặc `[RequireVendorLevel(2)]` áp đặt vào các endpoint thêm/sửa hàng hoá.
+
+---
+
+## 3. Bản đồ cấu trúc Clean Architecture cho Module
+
+Việc bạn map chuẩn tính năng vào các lớp dưới đây sẽ phân tích rạch ròi trách nhiệm của code:
+
+### Lớp Domain (Nhân - Core)
+*Lớp sạch tuyệt đối, không trỏ hay dùng bất cứ SDK/DB hay Package nào từ ngoài vào.*
+- **Entities (Thực thể database)**: Lớp `User`, `Role`, `RefreshTokenRecord`, `UserAddress`, `KYCRecord`.
+- **Enums**: Enum `KYCStatus` (None, Pending, Verified, Rejected), `UserRole`.
+- **Exceptions**: Các biệt lệ nội tại như `DomainException`, `UserAlreadyExistsException`...
+
+### Lớp Application (Tầng Ứng dụng - Nghiệp vụ)
+*Điều phối mọi luồng hoạt động thông qua các Service.*
+- **Services**: Các lớp xử lý logic nghiệp vụ chính như `AuthService`, `UserService`, `KycService`. 
+- **DTOs (Data Transfer Objects)**: Các lớp vận chuyển dữ liệu giữa API và Core (VD: `LoginRequest`, `UserResponse`).
+- **Interfaces (Biên dịch giao tiếp - Ports)**: 
+  - Giao tiếp CSDL: `IUserRepository`, `ITokenRepository`.
+  - Logic dịch vụ: `IAuthService`, `IKycService`.
+  - External Service: `IMessageBusClient` (Đuờng ống đưa message mail/SMS vào Rabbit).
+- **Mappings**: Sử dụng AutoMapper để chuyển đổi giữa Entity và DTO.
+
+### Lớp Infrastructure (Tầng Hạ tầng - Công nghệ nền)
+*Chứa những công nghệ vật lý cụ thể, chịu trách nhiệm lưu & gửi.*
+- **Database Context**: `YashGemsDbContext` cài đặt bằng Entity Framework Core (chứa logic mapping).
+- **Identity Service**: Lớp cụ thể hoá JWT Generation `JwtProvider` và BCrypt `BCryptCryptographyService`.
+- **Message Broker (RabbitMQ)**: Cài đặt code cụ thể của ống dẫn `IMessageProducer` -> Connect đến Server Rabbit đẩy Json format.
+- **Worker/Consumers (Hosted Services)**: Lớp chạy ngầm `EmailConsumerWorker`, `SmsConsumerWorker` - Lên tiếp nhận việc đẩy Email/SMS qua các vendor ngoài (như SendGrid/Twilio/Resend).
+- **Storage Integration**: Cài code dùng SDK Cloudinary để upload file.
+
+### Lớp API (Tầng Giao tiếp - Presentation)
+*Điều hướng và expose dữ liệu.*
+- **Endpoints**: `AuthController`, `KycController`, mỏng gọn nhất.
+- Phụ trách **Middlewares** như Exception Handling, CORS logic và DI Box (Dependency Injection Binding Setup).
+
+---
+
+## 4. Kiến trúc Tích hợp RabbitMQ vào luồng Gửi mã OTP
+
+Việc dùng RabbitMQ cho Email/SMS sẽ giúp tốc độ Web API xử lý không bị chậm, không làm cho người dùng bị loading / freeze màn hình browser khi đợi Gửi Mail xong:
+
+> [!TIP]
+> **Hiểu luồng Event-Driven cơ bản**:
+> 1. User gọi API `POST /api/auth/register`.
+> 2. `AuthService` thực hiện tạo User, sau đó gọi `IMessageBusClient.Publish()` để gửi yêu cầu gửi Mail/SMS vào **RabbitMQ**.
+> 3. API phản hồi ngay lập tức `200 OK`.
+> 4. `EmailConsumer` (Background Service) lắng nghe RabbitMQ, lấy message và thực hiện gửi mail thật qua provider (Resend/Twilio).
+
+## User Review Required
+> [!IMPORTANT]
+> Trên đây là kế hoạch kiến trúc Clean Architecture ứng dụng CQRS (MediatR), tích hợp hệ thống RabbitMQ Micro-services và chi tiết phân rã module eKYC/Auth cho Yash Gems.
+> 
+> Hãy xem xét kĩ bản báo cáo này. Bạn có đồng ý với các góc tiếp cận và đánh giá trên không? Nếu có bất kỳ câu hỏi nào cần giải thích thêm cơ chế hay nếu bạn OK rồi, chúng ta sẽ bắt tay vào khởi tạo cấu trúc Solution!
