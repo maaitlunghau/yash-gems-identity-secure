@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +37,9 @@ builder.Services.AddScoped<ITokenProvider, JwtProvider>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 // 5. Cấu hình JWT Authentication
-var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key is missing!");
+var jwtKey = builder.Configuration["Jwt:Key"]
+    ?? throw new InvalidOperationException("Jwt:Key is missing!");
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -50,6 +53,33 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
             ClockSkew = TimeSpan.Zero
+        };
+
+        // configure events for JWT Bearer (middleware)
+        // nếu kco middleware này thì khi 1 AC hoặc RFT đã bị revoke thì vẫn còn dùng đc
+        // phải có thì middleware này kiểm tra thấy đã bị revoke thì return về luôn.
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = async context =>
+            {
+                var jti = context.Principal?.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
+                if (string.IsNullOrEmpty(jti))
+                {
+                    context.Fail("Missing JTI claim in token");
+                    return;
+                }
+
+                var db = context.HttpContext.RequestServices.GetRequiredService<IdentityDbContext>();
+
+                var refreshToken = await db.RefreshTokens
+                    .FirstOrDefaultAsync(rt => rt.AccessTokenJti == jti);
+
+                if (refreshToken != null && !refreshToken.IsActive)
+                {
+                    context.Fail("Token has been revoked or expired");
+                    return;
+                }
+            }
         };
     });
 
