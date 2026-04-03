@@ -1,0 +1,16 @@
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Application/bin/Debug/net8.0/YashGems.Identity.Application.deps.json
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Application/bin/Debug/net8.0/YashGems.Identity.Application.dll
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Application/bin/Debug/net8.0/YashGems.Identity.Application.pdb
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Application/bin/Debug/net8.0/YashGems.Identity.Domain.dll
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Application/bin/Debug/net8.0/YashGems.Identity.Domain.pdb
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Application/obj/Debug/net8.0/YashGems.Identity.Application.csproj.AssemblyReference.cache
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Application/obj/Debug/net8.0/YashGems.Identity.Application.GeneratedMSBuildEditorConfig.editorconfig
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Application/obj/Debug/net8.0/YashGems.Identity.Application.AssemblyInfoInputs.cache
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Application/obj/Debug/net8.0/YashGems.Identity.Application.AssemblyInfo.cs
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Application/obj/Debug/net8.0/YashGems.Identity.Application.csproj.CoreCompileInputs.cache
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Application/obj/Debug/net8.0/YashGems.Identity.Application.sourcelink.json
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Application/obj/Debug/net8.0/YashGems.922F8216.Up2Date
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Application/obj/Debug/net8.0/YashGems.Identity.Application.dll
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Application/obj/Debug/net8.0/refint/YashGems.Identity.Application.dll
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Application/obj/Debug/net8.0/YashGems.Identity.Application.pdb
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Application/obj/Debug/net8.0/ref/YashGems.Identity.Application.dll
