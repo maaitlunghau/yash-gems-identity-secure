@@ -12,17 +12,21 @@ public class AuthService : IAuthService
     private readonly IRefreshTokenRepository _tokenRepository;
     private readonly ITokenProvider _tokenProvider;
     private readonly IMessageBusClient _messageBus;
+    private readonly IOtpRepository _otpRepository;
 
     public AuthService(
        IUserRepository userRepository,
        IRefreshTokenRepository tokenRepository,
        ITokenProvider tokenProvider,
-       IMessageBusClient messageBus)
+       IMessageBusClient messageBus,
+       IOtpRepository otpRepository
+    )
     {
         _userRepository = userRepository;
         _tokenRepository = tokenRepository;
         _tokenProvider = tokenProvider;
         _messageBus = messageBus;
+        _otpRepository = otpRepository;
     }
 
     public async Task<bool> RegisterAsync(RegisterRequest request)
@@ -40,17 +44,46 @@ public class AuthService : IAuthService
 
         await _userRepository.AddAsync(user);
 
-        // send Message to RabbitMQ to send Email or SMS
-        var otpMsg = new SendOtpMessage
+        var otpCode = new Random().Next(100000, 999999).ToString();
+        var otpRecord = new OtpCode
         {
             Email = user.Email,
-            OtpCode = new Random().Next(100000, 999999).ToString(),
-            MessageType = "Email"
+            Code = otpCode,
+            ExpiryDate = DateTime.UtcNow.AddMinutes(5),
+            IsUsed = false,
+            CreatedAt = DateTime.UtcNow
         };
 
-        _messageBus.PublishNewMessage(otpMsg, "otp-routing-key");
+        await _otpRepository.AddAsync(otpRecord);
+
+        _messageBus.PublishNewMessage(new SendOtpMessage
+        {
+            Email = request.Email,
+            OtpCode = otpCode,
+            MessageType = "Email"
+        }, "otp-routing-key");
 
         return true;
+    }
+
+    public async Task<bool> VerifyEmailAsync(string email, string code)
+    {
+        var otpRecord = await _otpRepository.GetLatestByEmailAsync(email);
+        if (otpRecord is null || otpRecord.Code != code || otpRecord.ExpiryDate < DateTime.UtcNow)
+        {
+            return false;
+        }
+
+        var user = await _userRepository.GetByEmailAsync(email);
+        if (user is not null)
+        {
+            otpRecord.IsUsed = true;
+            await _otpRepository.UpdateAsync(otpRecord);
+
+            return true;
+        }
+
+        return false;
     }
 
     public async Task<AuthResponse?> LoginAsync(LoginRequest request)

@@ -11,4 +11,6 @@ public interface IAuthService
     Task<AuthResponse?> RefreshTokenAsync(RefreshTokenRequest request);
 
     Task<bool> LogoutAsync(string refreshToken);
+
+    Task<bool> VerifyEmailAsync(string email, string code);
 }
