@@ -94,6 +94,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapControllers();
+
 app.MapGet("/", () => Results.Redirect("/swagger"));
 
 app.Run();
