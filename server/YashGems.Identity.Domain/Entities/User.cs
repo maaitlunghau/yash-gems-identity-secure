@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using YashGems.Identity.Domain.Enums;
 
 namespace YashGems.Identity.Domain.Entities;
@@ -13,6 +14,10 @@ public class User
     public UserRole Role { get; set; } = UserRole.Customer;
     public UserStatus Status { get; set; } = UserStatus.Pending;
     public KycStatus KycStatus { get; set; } = KycStatus.None;
+
+    public string? IdCardFrontUrl { get; set; }
+    public string? IdCardBackUrl { get; set; }
+    public string? FacePhotoUrl { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
