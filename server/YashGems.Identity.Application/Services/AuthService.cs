@@ -153,11 +153,25 @@ public class AuthService : IAuthService
         var user = await _userRepository.GetByEmailAsync(email);
         if (user is null) return false;
 
+        if (request.IdCardFront == null || request.IdCardBack == null)
+        {
+            Console.WriteLine("--> LỖI: Thiếu ảnh mặt trước hoặc mặt sau để upload eKYC.");
+            return false;
+        }
+
         var frontResult = await _photoService.AddPhotoAsync(request.IdCardFront!);
-        if (frontResult.Error != null) return false;
+        if (frontResult.Error != null || frontResult.SecureUrl == null)
+        {
+            Console.WriteLine($"--> LỖI CLOUDINARY (FRONT): {frontResult.Error?.Message}");
+            return false;
+        }
 
         var backResult = await _photoService.AddPhotoAsync(request.IdCardBack!);
-        if (backResult.Error != null) return false;
+        if (backResult.Error != null || backResult.SecureUrl == null)
+        {
+            Console.WriteLine($"--> LỖI CLOUDINARY (BACK): {backResult.Error?.Message}");
+            return false;
+        }
 
         user.IdCardFrontUrl = frontResult.SecureUrl.AbsoluteUri;
         user.IdCardBackUrl = backResult.SecureUrl.AbsoluteUri;
