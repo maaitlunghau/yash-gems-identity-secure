@@ -212,8 +212,16 @@ public class AuthService : IAuthService
         user.KycStatus = KycStatus.Rejected;
 
         // xoá eKYC đã upload (2 mặt trước và sau)
-        await _photoService.DeletionResultAsync(user.IdCardFrontPublicId!);
-        await _photoService.DeletionResultAsync(user.IdCardBackPublicId!);
+        if (!string.IsNullOrEmpty(user.IdCardFrontPublicId))
+            await _photoService.DeletionResultAsync(user.IdCardFrontPublicId);
+
+        if (!string.IsNullOrEmpty(user.IdCardBackPublicId))
+            await _photoService.DeletionResultAsync(user.IdCardBackPublicId);
+
+        user.IdCardFrontUrl = null;
+        user.IdCardFrontPublicId = null;
+        user.IdCardBackUrl = null;
+        user.IdCardBackPublicId = null;
 
         await _userRepository.UpdateAsync(user);
         return true;
