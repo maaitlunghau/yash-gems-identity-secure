@@ -149,3 +149,6 @@
 /Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Api/obj/Debug/net8.0/YashGems.Identity.Api.pdb
 /Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Api/obj/Debug/net8.0/YashGems.Identity.Api.genruntimeconfig.cache
 /Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Api/obj/Debug/net8.0/ref/YashGems.Identity.Api.dll
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Api/bin/Debug/net8.0/CloudinaryDotNet.dll
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Api/bin/Debug/net8.0/Microsoft.Extensions.ObjectPool.dll
+/Users/maaitlunghau/Documents/SelfStudy/yash-gems-identity-secure/server/YashGems.Identity.Api/bin/Debug/net8.0/Newtonsoft.Json.dll

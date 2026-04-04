@@ -10,6 +10,7 @@ using YashGems.Identity.Infrastructure.Authentication;
 using YashGems.Identity.Infrastructure.Data;
 using YashGems.Identity.Infrastructure.Messaging;
 using YashGems.Identity.Infrastructure.Repositories;
+using YashGems.Identity.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +33,7 @@ builder.Services.AddScoped<ITokenProvider, JwtProvider>();
 
 // 4. Đăng ký Application Services
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPhotoService, PhotoService>();
 
 // 5. Cấu hình JWT Authentication
 var jwtKey = builder.Configuration["Jwt:Key"]
