@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using YashGems.Identity.Domain.Enums;
 
 namespace YashGems.Identity.Domain.Entities;
