@@ -1,4 +1,3 @@
-using CloudinaryDotNet.Actions;
 using YashGems.Identity.Application.DTOs.Auth;
 using YashGems.Identity.Application.DTOs.Messaging;
 using YashGems.Identity.Application.Interfaces;
@@ -186,6 +185,37 @@ public class AuthService : IAuthService
         if (!string.IsNullOrEmpty(oldBackId))
             await _photoService.DeletionResultAsync(oldBackId);
 
+        return true;
+    }
+
+    public async Task<IEnumerable<User>> GetPendingKycUsersAsync()
+    {
+        return await _userRepository.GetPendingKycUsersAsync();
+    }
+
+    public async Task<bool> ApproveKycAsync(Guid userId)
+    {
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user is null) return false;
+
+        user.KycStatus = KycStatus.Verified;
+        await _userRepository.UpdateAsync(user);
+
+        return true;
+    }
+
+    public async Task<bool> RejectKycAsync(Guid userId)
+    {
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user is null) return false;
+
+        user.KycStatus = KycStatus.Rejected;
+
+        // xoá eKYC đã upload (2 mặt trước và sau)
+        await _photoService.DeletionResultAsync(user.IdCardFrontPublicId!);
+        await _photoService.DeletionResultAsync(user.IdCardBackPublicId!);
+
+        await _userRepository.UpdateAsync(user);
         return true;
     }
 }

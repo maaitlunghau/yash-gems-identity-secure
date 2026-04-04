@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using YashGems.Identity.Application.Interfaces;
 using YashGems.Identity.Domain.Entities;
+using YashGems.Identity.Domain.Enums;
 using YashGems.Identity.Infrastructure.Data;
 
 namespace YashGems.Identity.Infrastructure.Repositories;
@@ -22,6 +23,11 @@ public class UserRepository : IUserRepository
     public async Task<User?> GetByIdAsync(Guid id)
         => await _context.Users.FindAsync(id);
 
+    public async Task<IEnumerable<User>> GetUsersByKycStatusAsync(KycStatus status)
+        => await _context.Users
+            .Where(u => u.KycStatus == status)
+            .ToListAsync();
+
     public async Task<bool> ExistsByEmailAsync(string email)
         => await _context.Users.AnyAsync(u => u.Email == email);
 
@@ -39,5 +45,12 @@ public class UserRepository : IUserRepository
     {
         _context.Users.Remove(user);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<IEnumerable<User>> GetPendingKycUsersAsync()
+    {
+        return await _context.Users
+            .Where(u => u.KycStatus == KycStatus.Pending)
+            .ToListAsync();
     }
 }

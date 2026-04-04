@@ -6,6 +6,8 @@ using Microsoft.IdentityModel.Tokens;
 using YashGems.Identity.Application.Interfaces;
 using YashGems.Identity.Application.Messaging;
 using YashGems.Identity.Application.Services;
+using YashGems.Identity.Domain.Entities;
+using YashGems.Identity.Domain.Enums;
 using YashGems.Identity.Infrastructure.Authentication;
 using YashGems.Identity.Infrastructure.Data;
 using YashGems.Identity.Infrastructure.Messaging;
@@ -28,7 +30,7 @@ builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IOtpRepository, OtpRepository>();
 
 // 3. Đăng ký các Infrastructure Service
-builder.Services.AddSingleton<IMessageBusClient, MessageBusClient>(); // giữ 1 kết nối duy nhất
+builder.Services.AddSingleton<IMessageBusClient, MessageBusClient>();
 builder.Services.AddScoped<ITokenProvider, JwtProvider>();
 
 // 4. Đăng ký Application Services
@@ -100,6 +102,22 @@ if (app.Environment.IsDevelopment())
 
         await db.Database.EnsureDeletedAsync();
         await db.Database.EnsureCreatedAsync();
+
+        var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+        var adminEmail = "admin@yashgems.com";
+        if (!await userRepo.ExistsByEmailAsync(adminEmail))
+        {
+            var admin = new User
+            {
+                FullName = "System Admin - Yash Gems Identity Secure",
+                Email = adminEmail,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin@123"),
+                Role = UserRole.Admin,
+                Status = UserStatus.Verified
+            };
+
+            await userRepo.AddAsync(admin);
+        }
     }
 }
 

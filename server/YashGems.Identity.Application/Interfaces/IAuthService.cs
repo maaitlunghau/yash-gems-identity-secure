@@ -1,4 +1,5 @@
 using YashGems.Identity.Application.DTOs.Auth;
+using YashGems.Identity.Domain.Entities;
 
 namespace YashGems.Identity.Application.Interfaces;
 
@@ -15,4 +16,10 @@ public interface IAuthService
     Task<bool> VerifyEmailAsync(string email, string code);
 
     Task<bool> UploadKycImagesAsync(string email, KycUploadRequest request);
+
+    Task<IEnumerable<User>> GetPendingKycUsersAsync();
+
+    Task<bool> ApproveKycAsync(Guid userId);
+
+    Task<bool> RejectKycAsync(Guid userId);
 }
