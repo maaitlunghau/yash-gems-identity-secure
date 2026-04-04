@@ -66,6 +66,24 @@ namespace YashGems.Identity.Api.Controllers
             return Ok("Xác thực Email thành công!");
         }
 
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+        {
+            var result = await _authService.ForgotPasswordAsync(request.Email);
+            if (!result) return BadRequest("Email không tồn tại.");
+
+            return Ok("Mã OTP đã được gửi");
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            var result = await _authService.ResetPasswordAsync(request.Email, request.Otp, request.NewPassword);
+            if (!result) return BadRequest("OTP không đúng hoặc đã hết hạn.");
+
+            return Ok("Thay đổi mật khẩu thành công!");
+        }
+
         [HttpPost("upload-kyc")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadKyc([FromForm] KycUploadRequest request)

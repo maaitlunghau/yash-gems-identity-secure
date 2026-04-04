@@ -8,5 +8,7 @@ public interface IOtpRepository
 
     Task<OtpCode?> GetLatestByEmailAsync(string email);
 
+    Task<bool> ValidateOtpAsync(string email, string code);
+
     Task UpdateAsync(OtpCode otp);
 }

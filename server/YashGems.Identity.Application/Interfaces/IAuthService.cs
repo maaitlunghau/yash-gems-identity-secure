@@ -15,6 +15,9 @@ public interface IAuthService
 
     Task<bool> VerifyEmailAsync(string email, string code);
 
+    Task<bool> ForgotPasswordAsync(string email);
+    Task<bool> ResetPasswordAsync(string email, string otp, string newPassword);
+
     Task<bool> UploadKycImagesAsync(string email, KycUploadRequest request);
 
     Task<IEnumerable<User>> GetPendingKycUsersAsync();

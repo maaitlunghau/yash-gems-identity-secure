@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using YashGems.Identity.Application.DTOs.Auth;
 using YashGems.Identity.Application.DTOs.Messaging;
 using YashGems.Identity.Application.Interfaces;
@@ -145,6 +146,49 @@ public class AuthService : IAuthService
         storedToken.RevokedAt = DateTime.UtcNow;
 
         await _tokenRepository.UpdateAsync(storedToken);
+        return true;
+    }
+
+    public async Task<bool> ForgotPasswordAsync(string email)
+    {
+        var user = await _userRepository.GetByEmailAsync(email);
+        if (user is null) return false;
+
+        var otpCode = new Random().Next(100000, 999999).ToString();
+        var otpEntry = new OtpCode
+        {
+            Email = email,
+            Code = otpCode,
+            ExpiryDate = DateTime.UtcNow.AddMinutes(5),
+            IsUsed = false,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        await _otpRepository.AddAsync(otpEntry);
+
+        var emailMessage = new EmailMessage
+        {
+            To = email,
+            Subject = "YASH GEMS - Đặt lại mật khẩu",
+            Body = $"Mã xác thực để đổi mật khẩu của bạn là: <b>{otpCode}</b>. Mã này có hiệu lực trong 5 phút."
+        };
+
+        _messageBus.PublishNewMessage(emailMessage, "otp-routing-key");
+
+        return true;
+    }
+
+    public async Task<bool> ResetPasswordAsync(string email, string otp, string newPassword)
+    {
+        var isValidOtp = await _otpRepository.ValidateOtpAsync(email, otp);
+        if (!isValidOtp) return false;
+
+        var user = await _userRepository.GetByEmailAsync(email);
+        if (user is null) return false;
+
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+        await _userRepository.UpdateAsync(user);
+
         return true;
     }
 
