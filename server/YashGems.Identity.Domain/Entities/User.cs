@@ -15,7 +15,9 @@ public class User
     public KycStatus KycStatus { get; set; } = KycStatus.None;
 
     public string? IdCardFrontUrl { get; set; }
+    public string? IdCardFrontPublicId { get; set; }
     public string? IdCardBackUrl { get; set; }
+    public string? IdCardBackPublicId { get; set; }
     public string? FacePhotoUrl { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
