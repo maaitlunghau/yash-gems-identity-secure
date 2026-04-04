@@ -1,3 +1,4 @@
+using CloudinaryDotNet.Actions;
 using YashGems.Identity.Application.DTOs.Auth;
 using YashGems.Identity.Application.DTOs.Messaging;
 using YashGems.Identity.Application.Interfaces;
@@ -155,29 +156,36 @@ public class AuthService : IAuthService
 
         if (request.IdCardFront == null || request.IdCardBack == null)
         {
-            Console.WriteLine("--> LỖI: Thiếu ảnh mặt trước hoặc mặt sau để upload eKYC.");
+            Console.WriteLine("Upload thiếu ảnh mặt trước hoặc ảnh mặt sau!");
             return false;
         }
 
-        var frontResult = await _photoService.AddPhotoAsync(request.IdCardFront!);
-        if (frontResult.Error != null || frontResult.SecureUrl == null)
-        {
-            Console.WriteLine($"--> LỖI CLOUDINARY (FRONT): {frontResult.Error?.Message}");
-            return false;
-        }
+        var oldFrontId = user.IdCardFrontPublicId;
+        var oldBackId = user.IdCardBackPublicId;
 
-        var backResult = await _photoService.AddPhotoAsync(request.IdCardBack!);
-        if (backResult.Error != null || backResult.SecureUrl == null)
-        {
-            Console.WriteLine($"--> LỖI CLOUDINARY (BACK): {backResult.Error?.Message}");
-            return false;
-        }
+        // upload mặt trước
+        var frontResult = await _photoService.AddPhotoAsync(request.IdCardFront);
+        if (frontResult.Error != null || frontResult.SecureUrl == null) return false;
+
+        // upload mặt sau
+        var backResult = await _photoService.AddPhotoAsync(request.IdCardBack);
+        if (backResult.Error != null || backResult.SecureUrl == null) return false;
 
         user.IdCardFrontUrl = frontResult.SecureUrl.AbsoluteUri;
         user.IdCardBackUrl = backResult.SecureUrl.AbsoluteUri;
-        user.KycStatus = KycStatus.Pending;
 
+        user.IdCardFrontPublicId = frontResult.PublicId;
+        user.IdCardBackPublicId = backResult.PublicId;
+
+        user.KycStatus = KycStatus.Pending;
         await _userRepository.UpdateAsync(user);
+
+        if (!string.IsNullOrEmpty(oldFrontId))
+            await _photoService.DeletionResultAsync(oldFrontId);
+
+        if (!string.IsNullOrEmpty(oldBackId))
+            await _photoService.DeletionResultAsync(oldBackId);
+
         return true;
     }
 }
