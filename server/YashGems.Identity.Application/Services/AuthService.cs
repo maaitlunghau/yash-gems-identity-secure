@@ -14,13 +14,15 @@ public class AuthService : IAuthService
     private readonly ITokenProvider _tokenProvider;
     private readonly IMessageBusClient _messageBus;
     private readonly IOtpRepository _otpRepository;
+    private readonly IPhotoService _photoService;
 
     public AuthService(
        IUserRepository userRepository,
        IRefreshTokenRepository tokenRepository,
        ITokenProvider tokenProvider,
        IMessageBusClient messageBus,
-       IOtpRepository otpRepository
+       IOtpRepository otpRepository,
+       IPhotoService photoService
     )
     {
         _userRepository = userRepository;
@@ -28,6 +30,7 @@ public class AuthService : IAuthService
         _tokenProvider = tokenProvider;
         _messageBus = messageBus;
         _otpRepository = otpRepository;
+        _photoService = photoService;
     }
 
     public async Task<bool> RegisterAsync(RegisterRequest request)
@@ -142,6 +145,25 @@ public class AuthService : IAuthService
         storedToken.RevokedAt = DateTime.UtcNow;
 
         await _tokenRepository.UpdateAsync(storedToken);
+        return true;
+    }
+
+    public async Task<bool> UploadKycImagesAsync(string email, KycUploadRequest request)
+    {
+        var user = await _userRepository.GetByEmailAsync(email);
+        if (user is null) return false;
+
+        var frontResult = await _photoService.AddPhotoAsync(request.IdCardFront!);
+        if (frontResult.Error != null) return false;
+
+        var backResult = await _photoService.AddPhotoAsync(request.IdCardBack!);
+        if (backResult.Error != null) return false;
+
+        user.IdCardFrontUrl = frontResult.SecureUrl.AbsoluteUri;
+        user.IdCardBackUrl = backResult.SecureUrl.AbsoluteUri;
+        user.KycStatus = KycStatus.Pending;
+
+        await _userRepository.UpdateAsync(user);
         return true;
     }
 }

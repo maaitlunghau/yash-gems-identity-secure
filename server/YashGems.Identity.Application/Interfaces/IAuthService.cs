@@ -13,4 +13,6 @@ public interface IAuthService
     Task<bool> LogoutAsync(string refreshToken);
 
     Task<bool> VerifyEmailAsync(string email, string code);
+
+    Task<bool> UploadKycImagesAsync(string email, KycUploadRequest request);
 }

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using YashGems.Identity.Application.DTOs.Auth;
 using YashGems.Identity.Application.Interfaces;
@@ -63,6 +64,19 @@ namespace YashGems.Identity.Api.Controllers
             if (!result) return BadRequest("Mã OTP không chính xác hoặc đã hết hạn.");
 
             return Ok("Xác thực Email thành công!");
+        }
+
+        [HttpPost("upload-kyc")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadKyc([FromForm] KycUploadRequest request)
+        {
+            var email = User.FindFirst(ClaimTypes.Email)?.Value;
+            if (string.IsNullOrEmpty(email)) return Unauthorized();
+
+            var result = await _authService.UploadKycImagesAsync(email, request);
+            if (!result) return BadRequest("Lỗi khi tải ảnh lên Cloudinary");
+
+            return Ok("Tải ảnh eKYC thành công! Đang chờ duyệt.");
         }
     }
 }
