@@ -166,14 +166,14 @@ public class AuthService : IAuthService
 
         await _otpRepository.AddAsync(otpEntry);
 
-        var emailMessage = new EmailMessage
+        var otpMessage = new SendOtpMessage
         {
-            To = email,
-            Subject = "YASH GEMS - Đặt lại mật khẩu",
-            Body = $"Mã xác thực để đổi mật khẩu của bạn là: <b>{otpCode}</b>. Mã này có hiệu lực trong 5 phút."
+            Email = email,
+            OtpCode = otpCode,
+            MessageType = "ForgotPassword"
         };
 
-        _messageBus.PublishNewMessage(emailMessage, "otp-routing-key");
+        _messageBus.PublishNewMessage(otpMessage, "otp-routing-key");
 
         return true;
     }

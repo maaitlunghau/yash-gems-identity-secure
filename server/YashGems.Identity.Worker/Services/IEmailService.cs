@@ -2,5 +2,5 @@ namespace YashGems.Identity.Worker.Services;
 
 public interface IEmailService
 {
-    Task SendOtpEmailAsync(string toEmail, string otpCode);
+    Task SendOtpEmailAsync(string toEmail, string otpCode, string messageType);
 }

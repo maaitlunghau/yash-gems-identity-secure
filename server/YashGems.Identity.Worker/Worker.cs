@@ -86,7 +86,7 @@ public class MessageSubscriber : BackgroundService
                 );
                 _logger.LogInformation("--> [NỘI DUNG]: MÃ OTP CỦA BẠN LÀ: {Code}", otpMsg.OtpCode);
 
-                await _emailService.SendOtpEmailAsync(otpMsg.Email, otpMsg.OtpCode);
+                await _emailService.SendOtpEmailAsync(otpMsg.Email, otpMsg.OtpCode, otpMsg.MessageType);
                 _logger.LogInformation("--> Đã gửi Email thật thành công đến: {Email}", otpMsg.Email);
             }
 
