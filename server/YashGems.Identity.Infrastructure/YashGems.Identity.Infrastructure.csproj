@@ -17,6 +17,7 @@
     <Folder Include="Data/Configurations/" />
     <Folder Include="Messaging/" />
     <Folder Include="Repositories/" />
+    <Folder Include="Services/" />
   </ItemGroup>
 
   <ItemGroup>
