@@ -31,11 +31,11 @@ public class PhotoService : IPhotoService
             var uploadParams = new ImageUploadParams
             {
                 File = new FileDescription(file.FileName, stream),
-                // Transformation = new Transformation()
-                //     .Height(500)
-                //     .Width(500)
-                //     .Crop("fill")
-                //     .Gravity("face"),
+                Transformation = new Transformation()
+                    .Width(1600)
+                    .Crop("limit")
+                    .Quality("auto")
+                    .FetchFormat("auto"),
                 Folder = "yash-gems-ekyc"
             };
 
