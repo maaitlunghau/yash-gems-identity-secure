@@ -4,12 +4,13 @@ import { useMutation } from '@tanstack/react-query';
 import { authService } from '@/api/authService';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Mail, Lock, User, Loader2, ArrowRight } from 'lucide-react';
+import { Mail, Lock, User, Phone, Loader2, ArrowRight } from 'lucide-react';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   
@@ -24,16 +25,23 @@ export default function RegisterPage() {
       }, 2000);
     },
     onError: (err: any) => {
-      setError(err.response?.data || 'Failed to create account');
+      const errorData = err.response?.data;
+      if (typeof errorData === 'object' && errorData.errors) {
+        // Validation errors form .NET return an 'errors' object
+        const messages = Object.values(errorData.errors).flat().join(', ');
+        setError(messages);
+      } else if (typeof errorData === 'string') {
+        setError(errorData);
+      } else {
+        setError('Failed to create account');
+      }
     }
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    // Notice: Based on previous files, DTO might not contain FullName, 
-    // but just in case, we send it or omit it. YashGems Register request uses Email and Password.
-    registerMutation.mutate({ email, password });
+    registerMutation.mutate({ fullName, email, password, phoneNumber });
   };
 
   return (
@@ -75,6 +83,24 @@ export default function RegisterPage() {
                 />
               </div>
             </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Phone className="h-5 w-5 text-slate-400" />
+                </div>
+                <input
+                  type="tel"
+                  required
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  className="pl-10 block w-full border-slate-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm py-2.5 border"
+                  placeholder="0912345678"
+                />
+              </div>
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Email address</label>
               <div className="relative">
