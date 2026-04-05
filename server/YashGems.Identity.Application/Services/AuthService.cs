@@ -227,6 +227,7 @@ public class AuthService : IAuthService
         user.FacePhotoPublicId = faceResult.PublicId;
 
         var similarity = await _aiFaceService.CompareFacesAsync(user.FacePhotoUrl, user.IdCardFrontUrl);
+        Console.WriteLine("--> Điểm tương đồng khuôn mặt: " + similarity);
         user.KycSimilarityScore = similarity;
 
         if (similarity >= 80.0)
