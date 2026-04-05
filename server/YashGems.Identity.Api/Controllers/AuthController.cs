@@ -96,5 +96,17 @@ namespace YashGems.Identity.Api.Controllers
 
             return Ok("Tải ảnh eKYC thành công! Đang chờ duyệt.");
         }
+        [HttpGet("me")]
+        [Microsoft.AspNetCore.Authorization.Authorize]
+        public async Task<IActionResult> GetProfile()
+        {
+            var email = User.FindFirst(ClaimTypes.Email)?.Value;
+            if (string.IsNullOrEmpty(email)) return Unauthorized();
+
+            var profile = await _authService.GetProfileAsync(email);
+            if (profile == null) return NotFound("Không tìm thấy người dùng.");
+
+            return Ok(profile);
+        }
     }
 }

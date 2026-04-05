@@ -25,4 +25,6 @@ public interface IAuthService
     Task<bool> ApproveKycAsync(Guid userId);
 
     Task<bool> RejectKycAsync(Guid userId);
+
+    Task<UserProfileDto?> GetProfileAsync(string email);
 }
