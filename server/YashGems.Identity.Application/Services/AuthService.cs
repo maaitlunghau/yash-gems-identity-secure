@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using YashGems.Identity.Application.DTOs.Auth;
 using YashGems.Identity.Application.DTOs.Messaging;
 using YashGems.Identity.Application.Interfaces;
@@ -16,6 +15,7 @@ public class AuthService : IAuthService
     private readonly IMessageBusClient _messageBus;
     private readonly IOtpRepository _otpRepository;
     private readonly IPhotoService _photoService;
+    private readonly IAiFaceService _aiFaceService;
 
     public AuthService(
        IUserRepository userRepository,
@@ -23,7 +23,8 @@ public class AuthService : IAuthService
        ITokenProvider tokenProvider,
        IMessageBusClient messageBus,
        IOtpRepository otpRepository,
-       IPhotoService photoService
+       IPhotoService photoService,
+        IAiFaceService aiFaceService
     )
     {
         _userRepository = userRepository;
@@ -32,6 +33,7 @@ public class AuthService : IAuthService
         _messageBus = messageBus;
         _otpRepository = otpRepository;
         _photoService = photoService;
+        _aiFaceService = aiFaceService;
     }
 
     public async Task<bool> RegisterAsync(RegisterRequest request)
@@ -197,37 +199,57 @@ public class AuthService : IAuthService
         var user = await _userRepository.GetByEmailAsync(email);
         if (user is null) return false;
 
-        if (request.IdCardFront == null || request.IdCardBack == null)
+        if (request.IdCardFront == null || request.IdCardBack == null || request.FacePhoto == null)
         {
-            Console.WriteLine("Upload thiếu ảnh mặt trước hoặc ảnh mặt sau!");
+            Console.WriteLine("--> LỖI: Thiếu ảnh mặt trước, mặt sau hoặc ảnh chân dung.");
             return false;
         }
 
         var oldFrontId = user.IdCardFrontPublicId;
         var oldBackId = user.IdCardBackPublicId;
+        var oldFaceId = user.FacePhotoPublicId;
 
-        // upload mặt trước
         var frontResult = await _photoService.AddPhotoAsync(request.IdCardFront);
-        if (frontResult.Error != null || frontResult.SecureUrl == null) return false;
-
-        // upload mặt sau
         var backResult = await _photoService.AddPhotoAsync(request.IdCardBack);
-        if (backResult.Error != null || backResult.SecureUrl == null) return false;
+        var faceResult = await _photoService.AddPhotoAsync(request.FacePhoto);
+
+        if (frontResult.Error != null || backResult.Error != null || faceResult.Error != null)
+        {
+            return false;
+        }
 
         user.IdCardFrontUrl = frontResult.SecureUrl.AbsoluteUri;
         user.IdCardBackUrl = backResult.SecureUrl.AbsoluteUri;
+        user.FacePhotoUrl = faceResult.SecureUrl.AbsoluteUri;
 
         user.IdCardFrontPublicId = frontResult.PublicId;
         user.IdCardBackPublicId = backResult.PublicId;
+        user.FacePhotoPublicId = faceResult.PublicId;
 
-        user.KycStatus = KycStatus.Pending;
+        var similarity = await _aiFaceService.CompareFacesAsync(user.FacePhotoUrl, user.IdCardFrontUrl);
+        user.KycSimilarityScore = similarity;
+
+        if (similarity >= 80.0)
+        {
+            user.KycStatus = KycStatus.Verified;
+        }
+        else if (similarity >= 60.0)
+        {
+            user.KycStatus = KycStatus.Pending;
+        }
+        else
+        {
+            user.KycStatus = KycStatus.Rejected;
+        }
+
         await _userRepository.UpdateAsync(user);
 
         if (!string.IsNullOrEmpty(oldFrontId))
             await _photoService.DeletionResultAsync(oldFrontId);
-
         if (!string.IsNullOrEmpty(oldBackId))
             await _photoService.DeletionResultAsync(oldBackId);
+        if (!string.IsNullOrEmpty(oldFaceId))
+            await _photoService.DeletionResultAsync(oldFaceId);
 
         return true;
     }
