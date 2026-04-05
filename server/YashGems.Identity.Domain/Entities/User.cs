@@ -19,12 +19,14 @@ public class User
     public string? IdCardBackUrl { get; set; }
     public string? IdCardBackPublicId { get; set; }
     public string? FacePhotoUrl { get; set; }
+    public string? FacePhotoPublicId { get; set; }
+
+    public double KycSimilarityScore { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 
-    // Helper method (Nghiệp vụ Domain)
     public bool CanMakeHighValueTransaction() => KycStatus == KycStatus.Verified;
 }
