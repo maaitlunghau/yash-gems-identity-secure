@@ -15,7 +15,8 @@ public class MessageSubscriber : BackgroundService
     private IChannel? _channel;
     private readonly IEmailService _emailService;
     private readonly string _exchangeName = "YashGemsExchange";
-    private readonly string _queueName = "IdentityOtpQueue";
+    private readonly string _otpQueue = "IdentityOtpQueue";
+    private readonly string _kycQueue = "IdentityKycQueue";
 
     public MessageSubscriber(
         ILogger<MessageSubscriber> logger,
@@ -44,60 +45,59 @@ public class MessageSubscriber : BackgroundService
         // Khai báo Exchange (giống hệt bên API)
         _channel.ExchangeDeclareAsync(_exchangeName, ExchangeType.Direct).GetAwaiter().GetResult();
 
-        // Khai báo một cái "Phễu" (Queue) để hứng tin nhắn
-        _channel.QueueDeclareAsync(
-            _queueName, durable: true,
-            exclusive: false,
-            autoDelete: false
-        ).GetAwaiter().GetResult();
+        // Khai báo OTP Queue
+        _channel.QueueDeclareAsync(_otpQueue, durable: true, exclusive: false, autoDelete: false).GetAwaiter().GetResult();
+        _channel.QueueBindAsync(_otpQueue, _exchangeName, "otp-routing-key").GetAwaiter().GetResult();
 
-        // Nối cái Phễu này vào Nhà ga (Exchange) thông qua cái Nhãn (RoutingKey)
-        _channel.QueueBindAsync(
-            _queueName,
-            _exchangeName,
-            "otp-routing-key")
-        .GetAwaiter().GetResult();
+        // Khai báo KYC Queue
+        _channel.QueueDeclareAsync(_kycQueue, durable: true, exclusive: false, autoDelete: false).GetAwaiter().GetResult();
+        _channel.QueueBindAsync(_kycQueue, _exchangeName, "kyc-email-routing-key").GetAwaiter().GetResult();
 
-        _logger.LogInformation(
-            "--> Worker đang lắng nghe ở hàng đợi: {QueueName}",
-            _queueName
-        );
+        _logger.LogInformation("--> Worker đang lắng nghe mượt mà các queues...");
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         stoppingToken.ThrowIfCancellationRequested();
 
-        var consumer = new AsyncEventingBasicConsumer(_channel!);
-
-        consumer.ReceivedAsync += async (model, ea) =>
+        // OTP Consumer
+        var otpConsumer = new AsyncEventingBasicConsumer(_channel!);
+        otpConsumer.ReceivedAsync += async (model, ea) =>
         {
             var body = ea.Body.ToArray();
             var messageString = Encoding.UTF8.GetString(body);
-            var otpMsg = JsonSerializer.Deserialize<SendOtpMessage>(messageString);
-
-            if (otpMsg != null)
-            {
-                _logger.LogInformation("==========================================");
-                _logger.LogInformation(
-                    "--> [WORKER NHẬN TIN]: Gửi {Type} đến {To}",
-                    otpMsg.MessageType,
-                    string.IsNullOrEmpty(otpMsg.Email) ? otpMsg.PhoneNumber : otpMsg.Email
-                );
-                _logger.LogInformation("--> [NỘI DUNG]: MÃ OTP CỦA BẠN LÀ: {Code}", otpMsg.OtpCode);
-
-                await _emailService.SendOtpEmailAsync(otpMsg.Email, otpMsg.OtpCode, otpMsg.MessageType);
-                _logger.LogInformation("--> Đã gửi Email thật thành công đến: {Email}", otpMsg.Email);
+            try {
+                var otpMsg = JsonSerializer.Deserialize<SendOtpMessage>(messageString);
+                if (otpMsg != null)
+                {
+                    await _emailService.SendOtpEmailAsync(otpMsg.Email, otpMsg.OtpCode, otpMsg.MessageType);
+                    _logger.LogInformation("--> Đã gửi OTP Email thành công đến: {Email}", otpMsg.Email);
+                }
+            } catch(Exception ex) {
+                _logger.LogError(ex, "Error processing OTP message");
             }
-
-            // Gửi xác nhận cho RabbitMQ là "Tôi đã nhận hàng thành công, hãy xóa tin nhắn này đi"
             await _channel!.BasicAckAsync(ea.DeliveryTag, multiple: false);
         };
+        await _channel!.BasicConsumeAsync(queue: _otpQueue, autoAck: false, consumer: otpConsumer);
 
-        await _channel!.BasicConsumeAsync(
-            queue: _queueName,
-            autoAck: false,
-            consumer: consumer
-        );
+        // KYC Consumer
+        var kycConsumer = new AsyncEventingBasicConsumer(_channel!);
+        kycConsumer.ReceivedAsync += async (model, ea) =>
+        {
+            var body = ea.Body.ToArray();
+            var messageString = Encoding.UTF8.GetString(body);
+            try {
+                var kycMsg = JsonSerializer.Deserialize<SendKycStatusMessage>(messageString);
+                if (kycMsg != null)
+                {
+                    await _emailService.SendKycStatusEmailAsync(kycMsg.Email, kycMsg.Status);
+                    _logger.LogInformation("--> Đã gửi KYC Email [{Status}] thành công đến: {Email}", kycMsg.Status, kycMsg.Email);
+                }
+            } catch(Exception ex) {
+                _logger.LogError(ex, "Error processing KYC message");
+            }
+            await _channel!.BasicAckAsync(ea.DeliveryTag, multiple: false);
+        };
+        await _channel!.BasicConsumeAsync(queue: _kycQueue, autoAck: false, consumer: kycConsumer);
     }
 }
