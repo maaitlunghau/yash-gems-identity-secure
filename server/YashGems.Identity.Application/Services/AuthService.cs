@@ -245,6 +245,13 @@ public class AuthService : IAuthService
 
         await _userRepository.UpdateAsync(user);
 
+        // Publish message so Worker can send email based on KycStatus
+        _messageBus.PublishNewMessage(new SendKycStatusMessage
+        {
+            Email = user.Email,
+            Status = user.KycStatus.ToString()
+        }, "kyc-email-routing-key");
+
         if (!string.IsNullOrEmpty(oldFrontId))
             await _photoService.DeletionResultAsync(oldFrontId);
         if (!string.IsNullOrEmpty(oldBackId))
@@ -292,5 +299,18 @@ public class AuthService : IAuthService
 
         await _userRepository.UpdateAsync(user);
         return true;
+    }
+
+    public async Task<UserProfileDto?> GetProfileAsync(string email)
+    {
+        var user = await _userRepository.GetByEmailAsync(email);
+        if (user == null) return null;
+
+        return new UserProfileDto
+        {
+            FullName = user.FullName,
+            Email = user.Email,
+            KycStatus = user.KycStatus.ToString()
+        };
     }
 }
