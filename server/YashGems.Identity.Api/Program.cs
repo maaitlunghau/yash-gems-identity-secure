@@ -38,7 +38,10 @@ builder.Services.AddScoped<ITokenProvider, JwtProvider>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPhotoService, PhotoService>();
 
-// 5. Cấu hình JWT Authentication
+// 5. Đăng ký HttpClient
+builder.Services.AddHttpClient<IAiFaceService, FptAiFaceService>();
+
+// 6. Cấu hình JWT Authentication
 var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException("Jwt:Key is missing!");
 
