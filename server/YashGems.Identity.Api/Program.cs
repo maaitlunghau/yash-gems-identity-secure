@@ -95,6 +95,17 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder.WithOrigins("http://localhost:3000")
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .AllowCredentials();
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -134,6 +145,8 @@ app.MapControllers();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseCors("AllowAll");
 
 app.MapGet("/", () => Results.Redirect("/swagger"));
 
