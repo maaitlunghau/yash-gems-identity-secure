@@ -76,9 +76,18 @@ export default function WebcamCapture({ onCapture }: WebcamCaptureProps) {
 
             setLivenessStatus(prev => {
               const nextStatus = { ...prev };
-              if (ratio > 1.8) nextStatus.turnedLeft = true; // Looking Right (from camera view)
-              if (ratio < 0.55) nextStatus.turnedRight = true; // Looking Left
-              if (ratio >= 0.8 && ratio <= 1.2) nextStatus.isCenter = true; // Looking Center
+              
+              // Step 1: Must turn left first
+              if (!prev.turnedLeft && ratio > 1.8) {
+                nextStatus.turnedLeft = true;
+              }
+              // Step 2: Only after left is done, turn right
+              else if (prev.turnedLeft && !prev.turnedRight && ratio < 0.55) {
+                nextStatus.turnedRight = true;
+              }
+              
+              // isCenter should always reflect the *current* state, not cached
+              nextStatus.isCenter = (ratio >= 0.8 && ratio <= 1.2); 
               return nextStatus;
             });
           }
@@ -91,8 +100,12 @@ export default function WebcamCapture({ onCapture }: WebcamCaptureProps) {
 
   // Auto capture when liveness is verified
   useEffect(() => {
+    // Only capture when they have completed both turns, and are CURRENTLY looking center
     if (livenessStatus.turnedLeft && livenessStatus.turnedRight && livenessStatus.isCenter && !photo) {
-      capture();
+      // Add a tiny delay to let them stabilize face
+      setTimeout(() => {
+        capture();
+      }, 500);
     }
   }, [livenessStatus, photo]);
 
@@ -113,6 +126,9 @@ export default function WebcamCapture({ onCapture }: WebcamCaptureProps) {
     setPhoto(null);
     setLivenessStatus({ turnedLeft: false, turnedRight: false, isCenter: false });
   };
+
+  // Determine which step is currently active for UX
+  const currentStep = !livenessStatus.turnedLeft ? 1 : (!livenessStatus.turnedRight ? 2 : 3);
 
   return (
     <div className="flex flex-col items-center">
@@ -149,22 +165,33 @@ export default function WebcamCapture({ onCapture }: WebcamCaptureProps) {
 
           {/* Liveness indicators Overlay */}
           {!photo && (
-            <div className="absolute top-4 left-0 w-full px-4 flex justify-between gap-2">
-                <StatusBadge 
-                    label="Center" 
-                    active={livenessStatus.isCenter} 
-                    instruction="Look straight" 
-                />
-                <StatusBadge 
-                    label="Turn Left" 
-                    active={livenessStatus.turnedLeft} 
-                    instruction="Slowly to left" 
-                />
-                <StatusBadge 
-                    label="Turn Right" 
-                    active={livenessStatus.turnedRight} 
-                    instruction="Slowly to right" 
-                />
+            <div className="absolute top-4 left-0 w-full px-4 flex flex-col gap-3">
+                <div className="bg-black/60 shadow-lg text-white font-bold text-center py-2 rounded-xl backdrop-blur-md border border-white/20 animate-pulse">
+                    {currentStep === 1 && "Bước 1: Vui lòng quay mặt TỪ TỪ sang TRÁI"}
+                    {currentStep === 2 && "Bước 2: Tuyệt! Giờ hãy quay mặt sang PHẢI"}
+                    {currentStep === 3 && "Bước 3: Nhìn thẳng vào CAMERA và giữ yên"}
+                </div>
+                
+                <div className="flex justify-between gap-2">
+                    <StatusBadge 
+                        label="Sang Trái" 
+                        active={livenessStatus.turnedLeft} 
+                        isCurrent={currentStep === 1}
+                        instruction="Đang chờ..." 
+                    />
+                    <StatusBadge 
+                        label="Sang Phải" 
+                        active={livenessStatus.turnedRight} 
+                        isCurrent={currentStep === 2}
+                        instruction="Đang chờ..." 
+                    />
+                    <StatusBadge 
+                        label="Nhìn Thẳng" 
+                        active={livenessStatus.turnedLeft && livenessStatus.turnedRight && livenessStatus.isCenter} 
+                        isCurrent={currentStep === 3}
+                        instruction="Giữ yên..." 
+                    />
+                </div>
             </div>
           )}
         </div>
@@ -189,14 +216,14 @@ export default function WebcamCapture({ onCapture }: WebcamCaptureProps) {
   );
 }
 
-function StatusBadge({ label, active, instruction }: { label: string, active: boolean, instruction: string }) {
+function StatusBadge({ label, active, isCurrent, instruction }: { label: string, active: boolean, isCurrent?: boolean, instruction: string }) {
     return (
         <div className={`flex flex-col items-center p-2 rounded-lg backdrop-blur-md border ${
             active ? 'bg-green-500/80 border-green-400 text-white shadow-[0_0_15px_rgba(34,197,94,0.5)]' 
-                   : 'bg-black/40 border-white/20 text-white/70'
+                   : (isCurrent ? 'bg-indigo-600/80 border-indigo-400 text-white shadow-[0_0_15px_rgba(79,70,229,0.5)] scale-105' : 'bg-black/40 border-white/20 text-white/70')
         } transition-all duration-300 flex-1`}>
             <span className="text-xs font-bold uppercase tracking-wider">{label}</span>
-            <span className="text-[10px] mt-1 opacity-80 text-center">{active ? 'Done' : instruction}</span>
+            <span className="text-[10px] mt-1 opacity-80 text-center">{active ? 'Hoàn thành' : instruction}</span>
         </div>
     )
 }
