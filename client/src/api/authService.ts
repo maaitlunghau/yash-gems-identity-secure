@@ -24,5 +24,9 @@ export const authService = {
   googleLogin: async (idToken: string) => {
     const res = await api.post('/auth/google-login', { idToken });
     return res.data;
+  },
+  facebookLogin: async (accessToken: string) => {
+    const res = await api.post('/auth/facebook-login', { accessToken });
+    return res.data;
   }
 };
