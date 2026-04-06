@@ -1,3 +1,5 @@
+using Google.Apis.Auth;
+using Microsoft.Extensions.Configuration;
 using YashGems.Identity.Application.DTOs.Auth;
 using YashGems.Identity.Application.DTOs.Messaging;
 using YashGems.Identity.Application.Interfaces;
@@ -16,6 +18,7 @@ public class AuthService : IAuthService
     private readonly IOtpRepository _otpRepository;
     private readonly IPhotoService _photoService;
     private readonly IAiFaceService _aiFaceService;
+    private readonly IConfiguration _configuration;
 
     public AuthService(
        IUserRepository userRepository,
@@ -24,7 +27,8 @@ public class AuthService : IAuthService
        IMessageBusClient messageBus,
        IOtpRepository otpRepository,
        IPhotoService photoService,
-        IAiFaceService aiFaceService
+        IAiFaceService aiFaceService,
+        IConfiguration configuration
     )
     {
         _userRepository = userRepository;
@@ -34,6 +38,7 @@ public class AuthService : IAuthService
         _otpRepository = otpRepository;
         _photoService = photoService;
         _aiFaceService = aiFaceService;
+        _configuration = configuration;
     }
 
     public async Task<bool> RegisterAsync(RegisterRequest request)
@@ -312,5 +317,55 @@ public class AuthService : IAuthService
             Email = user.Email,
             KycStatus = user.KycStatus.ToString()
         };
+    }
+
+    public async Task<AuthResponse?> GoogleLoginAsync(string idToken)
+    {
+        try
+        {
+            var clientId = _configuration["GoogleAuth:ClientId"];
+            var settings = new GoogleJsonWebSignature.ValidationSettings
+            {
+                Audience = new List<string> { clientId! }
+            };
+
+            var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);
+
+            var user = await _userRepository.GetByEmailAsync(payload.Email);
+
+            if (user == null)
+            {
+                // Create a new user if they don't exist
+                user = new User
+                {
+                    FullName = payload.Name,
+                    Email = payload.Email,
+                    Status = UserStatus.Verified, // Pre-verified via Google
+                    PasswordHash = string.Empty // No password for social login users
+                };
+                await _userRepository.AddAsync(user);
+            }
+
+            var (accessToken, jti) = _tokenProvider.CreateAccessToken(user);
+            var refreshToken = _tokenProvider.CreateRefreshToken(user.Id, jti);
+
+            await _tokenRepository.AddAsync(refreshToken);
+
+            return new AuthResponse(
+                accessToken,
+                refreshToken.AccessToken,
+                user.FullName,
+                user.Email
+            );
+        }
+        catch (InvalidJwtException)
+        {
+            return null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"--> Lỗi Google Login: {ex.Message}");
+            return null;
+        }
     }
 }
