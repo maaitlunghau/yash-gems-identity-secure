@@ -20,5 +20,9 @@ export const authService = {
   getProfile: async () => {
     const res = await api.get('/auth/me');
     return res.data;
+  },
+  googleLogin: async (idToken: string) => {
+    const res = await api.post('/auth/google-login', { idToken });
+    return res.data;
   }
 };
