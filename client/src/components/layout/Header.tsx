@@ -42,15 +42,21 @@ export default function Header() {
           <div className="flex items-center gap-4">
             {isAuthenticated ? (
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 text-sm text-slate-300">
-                  <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600">
-                    <UserIcon className="w-4 h-4" />
+                <Link 
+                  href="/profile"
+                  className="flex items-center gap-2 text-sm text-slate-300 hover:text-white transition-all group"
+                >
+                  <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600 group-hover:border-indigo-500 group-hover:bg-indigo-500/10 transition-all overflow-hidden">
+                    <UserIcon className="w-4 h-4 group-hover:text-indigo-400" />
                   </div>
-                  <span className="hidden sm:inline">{user?.email}</span>
-                </div>
+                  <div className="flex flex-col">
+                    <span className="hidden sm:inline font-medium text-white">{user?.fullName || 'User'}</span>
+                    <span className="hidden sm:inline text-[10px] text-slate-400 leading-none">View Profile</span>
+                  </div>
+                </Link>
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-2 px-3 py-1.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-md transition-colors"
+                  className="flex items-center gap-2 px-3 py-1.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-md transition-colors border border-transparent hover:border-red-400/20"
                 >
                   <LogOut className="w-4 h-4" />
                   <span className="hidden sm:inline">Logout</span>

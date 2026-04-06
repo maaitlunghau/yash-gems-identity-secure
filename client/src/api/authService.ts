@@ -28,5 +28,9 @@ export const authService = {
   facebookLogin: async (accessToken: string) => {
     const res = await api.post('/auth/facebook-login', { accessToken });
     return res.data;
+  },
+  updateProfile: async (data: { fullName: string; phoneNumber: string }) => {
+    const res = await api.put('/auth/update-profile', data);
+    return res.data;
   }
 };
