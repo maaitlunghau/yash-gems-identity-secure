@@ -109,6 +109,19 @@ namespace YashGems.Identity.Api.Controllers
             return Ok(profile);
         }
 
+        [HttpPut("update-profile")]
+        [Microsoft.AspNetCore.Authorization.Authorize]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
+        {
+            var email = User.FindFirst(ClaimTypes.Email)?.Value;
+            if (string.IsNullOrEmpty(email)) return Unauthorized();
+
+            var result = await _authService.UpdateProfileAsync(email, request);
+            if (!result) return BadRequest("Cập nhật thông tin thất bại.");
+
+            return Ok("Cập nhật thông tin thành công!");
+        }
+
         [HttpPost("google-login")]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest request)
         {

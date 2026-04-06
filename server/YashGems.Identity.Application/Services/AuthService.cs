@@ -315,8 +315,23 @@ public class AuthService : IAuthService
         {
             FullName = user.FullName,
             Email = user.Email,
-            KycStatus = user.KycStatus.ToString()
+            PhoneNumber = user.PhoneNumber,
+            KycStatus = user.KycStatus.ToString(),
+            FacePhotoUrl = user.FacePhotoUrl,
+            KycSimilarityScore = user.KycSimilarityScore
         };
+    }
+
+    public async Task<bool> UpdateProfileAsync(string email, UpdateProfileRequest request)
+    {
+        var user = await _userRepository.GetByEmailAsync(email);
+        if (user == null) return false;
+
+        user.FullName = request.FullName;
+        user.PhoneNumber = request.PhoneNumber;
+
+        await _userRepository.UpdateAsync(user);
+        return true;
     }
 
     public async Task<AuthResponse?> GoogleLoginAsync(string idToken)

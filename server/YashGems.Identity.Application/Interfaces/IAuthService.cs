@@ -28,6 +28,8 @@ public interface IAuthService
 
     Task<UserProfileDto?> GetProfileAsync(string email);
 
+    Task<bool> UpdateProfileAsync(string email, UpdateProfileRequest request);
+
     Task<AuthResponse?> GoogleLoginAsync(string idToken);
 
     Task<AuthResponse?> FacebookLoginAsync(string accessToken);
