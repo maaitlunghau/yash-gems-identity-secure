@@ -108,5 +108,17 @@ namespace YashGems.Identity.Api.Controllers
 
             return Ok(profile);
         }
+
+        [HttpPost("google-login")]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest request)
+        {
+            var response = await _authService.GoogleLoginAsync(request.IdToken);
+            if (response == null)
+            {
+                return Unauthorized("Xác thực Google thất bại hoặc token không hợp lệ.");
+            }
+
+            return Ok(response);
+        }
     }
 }
