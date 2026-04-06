@@ -27,4 +27,6 @@ public interface IAuthService
     Task<bool> RejectKycAsync(Guid userId);
 
     Task<UserProfileDto?> GetProfileAsync(string email);
+
+    Task<AuthResponse?> GoogleLoginAsync(string idToken);
 }
