@@ -120,5 +120,17 @@ namespace YashGems.Identity.Api.Controllers
 
             return Ok(response);
         }
+
+        [HttpPost("facebook-login")]
+        public async Task<IActionResult> FacebookLogin([FromBody] FacebookLoginRequest request)
+        {
+            var response = await _authService.FacebookLoginAsync(request.AccessToken);
+            if (response == null)
+            {
+                return Unauthorized("Xác thực Facebook thất bại hoặc tài khoản không cung cấp email.");
+            }
+
+            return Ok(response);
+        }
     }
 }

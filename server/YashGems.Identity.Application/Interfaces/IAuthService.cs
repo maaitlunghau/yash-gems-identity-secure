@@ -29,4 +29,6 @@ public interface IAuthService
     Task<UserProfileDto?> GetProfileAsync(string email);
 
     Task<AuthResponse?> GoogleLoginAsync(string idToken);
+
+    Task<AuthResponse?> FacebookLoginAsync(string accessToken);
 }

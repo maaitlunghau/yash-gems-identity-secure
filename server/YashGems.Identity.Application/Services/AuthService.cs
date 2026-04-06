@@ -368,4 +368,61 @@ public class AuthService : IAuthService
             return null;
         }
     }
+
+    public async Task<AuthResponse?> FacebookLoginAsync(string accessToken)
+    {
+        try
+        {
+            var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync($"https://graph.facebook.com/me?fields=name,email&access_token={accessToken}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            var content = await response.Content.ReadAsStringAsync();
+            var fbUser = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(content);
+
+            string email = fbUser!.email;
+            string name = fbUser.name;
+
+            if (string.IsNullOrEmpty(email))
+            {
+                // Note: Some FB accounts don't have email verified or shared
+                return null;
+            }
+
+            var user = await _userRepository.GetByEmailAsync(email);
+
+            if (user == null)
+            {
+                user = new User
+                {
+                    FullName = name,
+                    Email = email,
+                    Status = UserStatus.Verified,
+                    PasswordHash = string.Empty
+                };
+                await _userRepository.AddAsync(user);
+            }
+
+            var (newAccessToken, jti) = _tokenProvider.CreateAccessToken(user);
+            var refreshToken = _tokenProvider.CreateRefreshToken(user.Id, jti);
+
+            await _tokenRepository.AddAsync(refreshToken);
+
+            return new AuthResponse(
+                newAccessToken,
+                refreshToken.AccessToken,
+                user.FullName,
+                user.Email
+            );
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"--> Lỗi Facebook Login: {ex.Message}");
+            return null;
+        }
+    }
 }
