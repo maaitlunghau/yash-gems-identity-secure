@@ -5,6 +5,9 @@ import { authService } from '@/api/authService';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Mail, Lock, User, Phone, Loader2, ArrowRight } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
+import Cookies from 'js-cookie';
+import { useAuthStore } from '@/store/useAuthStore';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -13,7 +16,8 @@ export default function RegisterPage() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  
+
+  const setAuth = useAuthStore((state) => state.setAuth);
   const router = useRouter();
 
   const registerMutation = useMutation({
@@ -35,6 +39,23 @@ export default function RegisterPage() {
       } else {
         setError('Failed to create account');
       }
+    }
+  });
+
+  const googleLoginMutation = useMutation({
+    mutationFn: authService.googleLogin,
+    onSuccess: (data: any) => {
+      Cookies.set('access_token', data.accessToken, { expires: 1 });
+      setAuth({
+        email: data.email,
+        id: 'google-user',
+        fullName: data.fullName,
+        kycStatus: 'None'
+      });
+      router.push('/');
+    },
+    onError: (err: any) => {
+      setError(err.response?.data || 'Google login failed');
     }
   });
 
@@ -83,7 +104,7 @@ export default function RegisterPage() {
                 />
               </div>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
               <div className="relative">
@@ -150,12 +171,37 @@ export default function RegisterPage() {
             )}
           </button>
         </form>
-        
+
         <div className="text-center text-sm">
           <span className="text-slate-600">Already have an account? </span>
           <Link href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
             Sign in
           </Link>
+        </div>
+
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-slate-200"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white text-slate-500 uppercase tracking-wider">Or continue with</span>
+          </div>
+        </div>
+
+        <div className="flex justify-center">
+          <GoogleLogin
+            onSuccess={credentialResponse => {
+              if (credentialResponse.credential) {
+                googleLoginMutation.mutate(credentialResponse.credential);
+              }
+            }}
+            onError={() => {
+              setError('Google login failed');
+            }}
+            useOneTap={true}
+            theme="outline"
+            shape="pill"
+          />
         </div>
       </div>
     </div>

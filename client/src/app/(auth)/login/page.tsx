@@ -7,12 +7,13 @@ import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import Link from 'next/link';
 import { Mail, Lock, Loader2, ArrowRight } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  
+
   const setAuth = useAuthStore((state) => state.setAuth);
   const router = useRouter();
 
@@ -31,6 +32,23 @@ export default function LoginPage() {
     },
     onError: (err: any) => {
       setError(err.response?.data || 'Invalid email or password');
+    }
+  });
+
+  const googleLoginMutation = useMutation({
+    mutationFn: authService.googleLogin,
+    onSuccess: (data: any) => {
+      Cookies.set('access_token', data.accessToken, { expires: 1 });
+      setAuth({
+        email: data.email,
+        id: 'google-user',
+        fullName: data.fullName,
+        kycStatus: 'None' // Default for new social users
+      });
+      router.push('/');
+    },
+    onError: (err: any) => {
+      setError(err.response?.data || 'Google login failed');
     }
   });
 
@@ -122,12 +140,37 @@ export default function LoginPage() {
             )}
           </button>
         </form>
-        
+
         <div className="text-center text-sm">
           <span className="text-slate-600">Don't have an account? </span>
           <Link href="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
             Sign up now
           </Link>
+        </div>
+
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-slate-200"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white text-slate-500 uppercase tracking-wider">Or continue with</span>
+          </div>
+        </div>
+
+        <div className="flex justify-center">
+          <GoogleLogin
+            onSuccess={credentialResponse => {
+              if (credentialResponse.credential) {
+                googleLoginMutation.mutate(credentialResponse.credential);
+              }
+            }}
+            onError={() => {
+              setError('Google login failed');
+            }}
+            useOneTap={true}
+            theme="outline"
+            shape="pill"
+          />
         </div>
       </div>
     </div>
